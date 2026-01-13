@@ -1,3 +1,6 @@
+// AbortController for conditional authentication
+let conditionalAuthAbortController = null;
+
 // Generate random challenge per WebAuthn specification
 function generateChallenge() {
     const buffer = new Uint8Array(32);
@@ -17,6 +20,12 @@ async function registerPasskey() {
     const registerButton = document.getElementById('registerButton');
     registerButton.disabled = true;
     showStatus('registerStatus', '登録処理中...', 'info');
+
+    // Abort conditional authentication if it's running
+    if (conditionalAuthAbortController) {
+        conditionalAuthAbortController.abort();
+        conditionalAuthAbortController = null;
+    }
 
     try {
         // Generate random challenge
@@ -66,6 +75,11 @@ async function registerPasskey() {
         
         console.log('Credential created:', credential);
         showStatus('registerStatus', 'パスキーの登録に成功しました！', 'success');
+        
+        // Reload the page after successful registration
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000); // Wait 1 second to show success message
     } catch (error) {
         console.error('Registration failed:', error);
         showStatus('registerStatus', `登録に失敗しました: ${error.message}`, 'error');
@@ -90,6 +104,9 @@ async function conditionalAuthentication() {
             return;
         }
 
+        // Create AbortController for this conditional authentication
+        conditionalAuthAbortController = new AbortController();
+
         // Generate random challenge
         const challenge = generateChallenge();
 
@@ -101,7 +118,8 @@ async function conditionalAuthentication() {
                 userVerification: "required", // Required as per specification
                 timeout: 60000
             },
-            mediation: "conditional" // Enable conditional UI
+            mediation: "conditional", // Enable conditional UI
+            signal: conditionalAuthAbortController.signal // Add AbortSignal
         };
 
         // Start conditional authentication
@@ -118,6 +136,9 @@ async function conditionalAuthentication() {
             console.error('Authentication failed:', error);
             showStatus('loginStatus', `認証に失敗しました: ${error.message}`, 'error');
         }
+    } finally {
+        // Clean up the abort controller if the authentication completes or fails
+        conditionalAuthAbortController = null;
     }
 }
 
