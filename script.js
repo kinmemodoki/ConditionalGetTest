@@ -104,6 +104,11 @@ async function conditionalAuthentication() {
             return;
         }
 
+        // Abort any existing conditional authentication before starting a new one
+        if (conditionalAuthAbortController) {
+            conditionalAuthAbortController.abort();
+        }
+
         // Create AbortController for this conditional authentication
         conditionalAuthAbortController = new AbortController();
 
