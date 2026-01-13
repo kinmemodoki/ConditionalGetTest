@@ -5,25 +5,6 @@ function generateChallenge() {
     return buffer;
 }
 
-// Convert ArrayBuffer to Base64URL
-function bufferToBase64URL(buffer) {
-    const bytes = new Uint8Array(buffer);
-    let binary = '';
-    for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary)
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
-}
-
-// Convert string to ArrayBuffer
-function stringToBuffer(str) {
-    const encoder = new TextEncoder();
-    return encoder.encode(str);
-}
-
 // Show status message
 function showStatus(elementId, message, type) {
     const statusElement = document.getElementById(elementId);
