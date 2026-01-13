@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAuthn Conditional UI Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>WebAuthn Conditional UI (Passkey Autofill) Test</h1>
+        
+        <section class="register-section">
+            <h2>パスキーの登録</h2>
+            <button id="registerButton" class="btn">パスキーを登録</button>
+            <div id="registerStatus" class="status"></div>
+        </section>
+
+        <section class="login-section">
+            <h2>ログイン (Conditional UI)</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">ユーザー名:</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        autocomplete="username webauthn"
+                        placeholder="ユーザー名を入力"
+                    >
+                </div>
+                <button type="submit" class="btn">ログイン</button>
+            </form>
+            <div id="loginStatus" class="status"></div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
