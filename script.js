@@ -90,6 +90,16 @@ async function registerPasskey() {
 
 // Perform conditional authentication (autofill)
 async function conditionalAuthentication() {
+    // Abort any existing conditional authentication before starting a new one
+    if (conditionalAuthAbortController) {
+        conditionalAuthAbortController.abort();
+        conditionalAuthAbortController = null;
+    }
+
+    // Create AbortController for this conditional authentication
+    const abortController = new AbortController();
+    conditionalAuthAbortController = abortController;
+
     try {
         // Check if conditional mediation is supported
         if (!window.PublicKeyCredential || 
@@ -104,14 +114,6 @@ async function conditionalAuthentication() {
             return;
         }
 
-        // Abort any existing conditional authentication before starting a new one
-        if (conditionalAuthAbortController) {
-            conditionalAuthAbortController.abort();
-        }
-
-        // Create AbortController for this conditional authentication
-        conditionalAuthAbortController = new AbortController();
-
         // Generate random challenge
         const challenge = generateChallenge();
 
@@ -124,7 +126,7 @@ async function conditionalAuthentication() {
                 timeout: 60000
             },
             mediation: "conditional", // Enable conditional UI
-            signal: conditionalAuthAbortController.signal // Add AbortSignal
+            signal: abortController.signal // Add AbortSignal
         };
 
         // Start conditional authentication
@@ -142,8 +144,10 @@ async function conditionalAuthentication() {
             showStatus('loginStatus', `認証に失敗しました: ${error.message}`, 'error');
         }
     } finally {
-        // Clean up the abort controller if the authentication completes or fails
-        conditionalAuthAbortController = null;
+        // Clean up the abort controller only if it's still the current one
+        if (conditionalAuthAbortController === abortController) {
+            conditionalAuthAbortController = null;
+        }
     }
 }
 
