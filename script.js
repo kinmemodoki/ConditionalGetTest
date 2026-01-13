@@ -1,6 +1,9 @@
 // AbortController for conditional authentication
 let conditionalAuthAbortController = null;
 
+// Delay before reloading page after successful registration (milliseconds)
+const REGISTRATION_SUCCESS_RELOAD_DELAY = 1000;
+
 // Generate random challenge per WebAuthn specification
 function generateChallenge() {
     const buffer = new Uint8Array(32);
@@ -79,7 +82,7 @@ async function registerPasskey() {
         // Reload the page after successful registration
         setTimeout(() => {
             window.location.reload();
-        }, 1000); // Wait 1 second to show success message
+        }, REGISTRATION_SUCCESS_RELOAD_DELAY); // Wait to show success message
     } catch (error) {
         console.error('Registration failed:', error);
         showStatus('registerStatus', `登録に失敗しました: ${error.message}`, 'error');
