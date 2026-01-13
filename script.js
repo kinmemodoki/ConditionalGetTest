@@ -147,7 +147,8 @@ async function conditionalAuthentication() {
             showStatus('loginStatus', `認証に失敗しました: ${error.message}`, 'error');
         }
     } finally {
-        // Clean up the abort controller only if it's still the current one
+        // Clean up the abort controller only if it matches the local reference
+        // This prevents clearing a newer controller created by concurrent calls
         if (conditionalAuthAbortController === abortController) {
             conditionalAuthAbortController = null;
         }
