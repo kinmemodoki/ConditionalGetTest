@@ -18,9 +18,16 @@ function showStatus(elementId, message, type) {
     statusElement.className = `status ${type}`;
 }
 
+// Helper function to convert ArrayBuffer or Uint8Array to hex string
+function arrayBufferToHex(buffer) {
+    return Array.from(new Uint8Array(buffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+}
+
 // Parse authenticator data from credential response
 function parseAuthenticatorData(authData) {
-    const dataView = new DataView(authData.buffer || authData);
+    const dataView = new DataView(authData.buffer);
     
     // RP ID Hash (32 bytes)
     const rpIdHash = new Uint8Array(authData.slice(0, 32));
@@ -32,7 +39,7 @@ function parseAuthenticatorData(authData) {
     const signCount = dataView.getUint32(33, false);
     
     return {
-        rpIdHash: Array.from(rpIdHash).map(b => b.toString(16).padStart(2, '0')).join(''),
+        rpIdHash: arrayBufferToHex(rpIdHash),
         flags: {
             userPresent: !!(flags & 0x01),
             userVerified: !!(flags & 0x04),
@@ -63,10 +70,13 @@ function displayAssertionDetails(credential) {
         })
         .join('');
     
+    // Decode client data JSON safely
+    const clientDataText = new TextDecoder().decode(response.clientDataJSON);
+    
     const html = `
         <div class="detail-group">
             <h3>Credential ID</h3>
-            <div class="detail-value hex-value">${Array.from(new Uint8Array(credential.rawId)).map(b => b.toString(16).padStart(2, '0')).join('')}</div>
+            <div class="detail-value hex-value">${arrayBufferToHex(credential.rawId)}</div>
         </div>
         <div class="detail-group">
             <h3>Authenticator Data</h3>
@@ -85,15 +95,17 @@ function displayAssertionDetails(credential) {
         </div>
         <div class="detail-group">
             <h3>Client Data JSON</h3>
-            <div class="detail-value json-value">${new TextDecoder().decode(response.clientDataJSON)}</div>
+            <div class="detail-value json-value"></div>
         </div>
         <div class="detail-group">
             <h3>Signature</h3>
-            <div class="detail-value hex-value">${Array.from(new Uint8Array(response.signature)).map(b => b.toString(16).padStart(2, '0')).join('')}</div>
+            <div class="detail-value hex-value">${arrayBufferToHex(response.signature)}</div>
         </div>
     `;
     
     assertionDetails.innerHTML = html;
+    // Set client data JSON safely using textContent to prevent XSS
+    assertionDetails.querySelector('.json-value').textContent = clientDataText;
     assertionSection.style.display = 'block';
 }
 
