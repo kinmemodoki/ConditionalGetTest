@@ -179,6 +179,7 @@ async function registerPasskey() {
         showStatus('registerStatus', `登録に失敗しました: ${error.message}`, 'error');
     } finally {
         registerButton.disabled = false;
+        conditionalAuthentication();
     }
 }
 
