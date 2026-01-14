@@ -27,7 +27,7 @@ function arrayBufferToHex(buffer) {
 
 // Parse authenticator data from credential response
 function parseAuthenticatorData(authData) {
-    const dataView = new DataView(authData.buffer);
+    const dataView = new DataView(authData.buffer, authData.byteOffset, authData.byteLength);
     
     // RP ID Hash (32 bytes)
     const rpIdHash = new Uint8Array(authData.slice(0, 32));
@@ -41,12 +41,12 @@ function parseAuthenticatorData(authData) {
     return {
         rpIdHash: arrayBufferToHex(rpIdHash),
         flags: {
-            userPresent: !!(flags & 0x01),
-            userVerified: !!(flags & 0x04),
-            backupEligible: !!(flags & 0x08),
-            backupState: !!(flags & 0x10),
-            attestedCredentialData: !!(flags & 0x40),
-            extensionDataIncluded: !!(flags & 0x80)
+            userPresent: !!(flags & 0x01),              // UP (bit 0)
+            userVerified: !!(flags & 0x04),             // UV (bit 2)
+            backupEligible: !!(flags & 0x08),           // BE (bit 3)
+            backupState: !!(flags & 0x10),              // BS (bit 4)
+            attestedCredentialData: !!(flags & 0x40),   // AT (bit 6)
+            extensionDataIncluded: !!(flags & 0x80)     // ED (bit 7)
         },
         flagsByte: flags,
         signCount: signCount
