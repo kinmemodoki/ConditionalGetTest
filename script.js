@@ -18,6 +18,97 @@ function showStatus(elementId, message, type) {
     statusElement.className = `status ${type}`;
 }
 
+// Helper function to convert ArrayBuffer or Uint8Array to hex string
+function arrayBufferToHex(buffer) {
+    return Array.from(new Uint8Array(buffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+}
+
+// Parse authenticator data from credential response
+function parseAuthenticatorData(authData) {
+    const dataView = new DataView(authData.buffer, authData.byteOffset, authData.byteLength);
+    
+    // RP ID Hash (32 bytes)
+    const rpIdHash = new Uint8Array(authData.slice(0, 32));
+    
+    // Flags (1 byte)
+    const flags = dataView.getUint8(32);
+    
+    // Sign Count (4 bytes, big-endian)
+    const signCount = dataView.getUint32(33, false);
+    
+    return {
+        rpIdHash: arrayBufferToHex(rpIdHash),
+        flags: {
+            userPresent: !!(flags & 0x01),              // UP (bit 0)
+            userVerified: !!(flags & 0x04),             // UV (bit 2)
+            backupEligible: !!(flags & 0x08),           // BE (bit 3)
+            backupState: !!(flags & 0x10),              // BS (bit 4)
+            attestedCredentialData: !!(flags & 0x40),   // AT (bit 6)
+            extensionDataIncluded: !!(flags & 0x80)     // ED (bit 7)
+        },
+        flagsByte: flags,
+        signCount: signCount
+    };
+}
+
+// Display assertion details in UI
+function displayAssertionDetails(credential) {
+    const response = credential.response;
+    const authData = new Uint8Array(response.authenticatorData);
+    const parsedData = parseAuthenticatorData(authData);
+    
+    const assertionSection = document.getElementById('assertionSection');
+    const assertionDetails = document.getElementById('assertionDetails');
+    
+    const flagsHtml = Object.entries(parsedData.flags)
+        .map(([key, value]) => {
+            const status = value ? '✓' : '✗';
+            const className = value ? 'flag-true' : 'flag-false';
+            return `<div class="flag-item"><span class="${className}">${status}</span> ${key}</div>`;
+        })
+        .join('');
+    
+    // Decode client data JSON safely
+    const clientDataText = new TextDecoder().decode(response.clientDataJSON);
+    
+    const html = `
+        <div class="detail-group">
+            <h3>Credential ID</h3>
+            <div class="detail-value hex-value">${arrayBufferToHex(credential.rawId)}</div>
+        </div>
+        <div class="detail-group">
+            <h3>Authenticator Data</h3>
+            <div class="detail-item">
+                <strong>RP ID Hash:</strong>
+                <div class="detail-value hex-value">${parsedData.rpIdHash}</div>
+            </div>
+            <div class="detail-item">
+                <strong>Flags (0x${parsedData.flagsByte.toString(16).padStart(2, '0')}):</strong>
+                <div class="flags-list">${flagsHtml}</div>
+            </div>
+            <div class="detail-item">
+                <strong>Sign Count:</strong>
+                <div class="detail-value">${parsedData.signCount}</div>
+            </div>
+        </div>
+        <div class="detail-group">
+            <h3>Client Data JSON</h3>
+            <div class="detail-value json-value"></div>
+        </div>
+        <div class="detail-group">
+            <h3>Signature</h3>
+            <div class="detail-value hex-value">${arrayBufferToHex(response.signature)}</div>
+        </div>
+    `;
+    
+    assertionDetails.innerHTML = html;
+    // Set client data JSON safely using textContent to prevent XSS
+    assertionDetails.querySelector('.json-value').textContent = clientDataText;
+    assertionSection.style.display = 'block';
+}
+
 // Register a new passkey
 async function registerPasskey() {
     const registerButton = document.getElementById('registerButton');
@@ -138,6 +229,7 @@ async function conditionalAuthentication() {
         if (credential) {
             console.log('Authentication successful:', credential);
             showStatus('loginStatus', '認証に成功しました！', 'success');
+            displayAssertionDetails(credential);
             return credential;
         }
     } catch (error) {
@@ -181,6 +273,7 @@ async function performLogin(event) {
         if (credential) {
             console.log('Authentication successful:', credential);
             showStatus('loginStatus', '認証に成功しました！', 'success');
+            displayAssertionDetails(credential);
         }
     } catch (error) {
         console.error('Authentication failed:', error);
