@@ -1,3 +1,9 @@
+// AbortController for conditional authentication
+let conditionalAuthAbortController = null;
+
+// Delay before reloading page after successful registration (milliseconds)
+const REGISTRATION_SUCCESS_RELOAD_DELAY = 1000;
+
 // Generate random challenge per WebAuthn specification
 function generateChallenge() {
     const buffer = new Uint8Array(32);
@@ -17,6 +23,12 @@ async function registerPasskey() {
     const registerButton = document.getElementById('registerButton');
     registerButton.disabled = true;
     showStatus('registerStatus', '登録処理中...', 'info');
+
+    // Abort conditional authentication if it's running
+    if (conditionalAuthAbortController) {
+        conditionalAuthAbortController.abort();
+        conditionalAuthAbortController = null;
+    }
 
     try {
         // Generate random challenge
@@ -66,6 +78,11 @@ async function registerPasskey() {
         
         console.log('Credential created:', credential);
         showStatus('registerStatus', 'パスキーの登録に成功しました！', 'success');
+        
+        // Reload the page after successful registration
+        setTimeout(() => {
+            window.location.reload();
+        }, REGISTRATION_SUCCESS_RELOAD_DELAY); // Wait to show success message
     } catch (error) {
         console.error('Registration failed:', error);
         showStatus('registerStatus', `登録に失敗しました: ${error.message}`, 'error');
@@ -76,6 +93,16 @@ async function registerPasskey() {
 
 // Perform conditional authentication (autofill)
 async function conditionalAuthentication() {
+    // Abort any existing conditional authentication before starting a new one
+    if (conditionalAuthAbortController) {
+        conditionalAuthAbortController.abort();
+        conditionalAuthAbortController = null;
+    }
+
+    // Create AbortController for this conditional authentication
+    const abortController = new AbortController();
+    conditionalAuthAbortController = abortController;
+
     try {
         // Check if conditional mediation is supported
         if (!window.PublicKeyCredential || 
@@ -101,7 +128,8 @@ async function conditionalAuthentication() {
                 userVerification: "required", // Required as per specification
                 timeout: 60000
             },
-            mediation: "conditional" // Enable conditional UI
+            mediation: "conditional", // Enable conditional UI
+            signal: abortController.signal // Add AbortSignal
         };
 
         // Start conditional authentication
@@ -117,6 +145,12 @@ async function conditionalAuthentication() {
         if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
             console.error('Authentication failed:', error);
             showStatus('loginStatus', `認証に失敗しました: ${error.message}`, 'error');
+        }
+    } finally {
+        // Clean up the abort controller only if it matches the local reference
+        // This prevents clearing a newer controller created by concurrent calls
+        if (conditionalAuthAbortController === abortController) {
+            conditionalAuthAbortController = null;
         }
     }
 }
