@@ -2,7 +2,7 @@
 let conditionalAuthAbortController = null;
 
 // Delay before reloading page after successful registration (milliseconds)
-const REGISTRATION_SUCCESS_RELOAD_DELAY = 1000;
+const REGISTRATION_SUCCESS_RELOAD_DELAY = 0;
 
 // Generate random challenge per WebAuthn specification
 function generateChallenge() {
@@ -253,20 +253,83 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerButton = document.getElementById('registerButton');
     registerButton.addEventListener('click', registerPasskey);
 
-    // 動的にformを追加（id属性なし、novalidateあり）
+    // レポート検証用 - 複数のformで各条件をテスト
     const formContainer = document.getElementById('formContainer');
     formContainer.innerHTML = `
-        <form novalidate="">
+        <h3>autocomplete属性のバリエーション</h3>
+
+        <form novalidate="" style="margin-bottom: 15px; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px;">
             <div class="form-group">
-                <label>ユーザー名:</label>
-                <input
-                    type="email"
-                    name="username"
-                    autocomplete="email webauthn"
-                    placeholder="メールアドレスを入力"
-                >
+                <label><strong>1. autocomplete="username webauthn"</strong> → 期待: ✅発動</label>
+                <input type="text" name="test1" autocomplete="username webauthn" placeholder="Form1">
             </div>
-            <button type="submit" class="btn">ログイン</button>
+        </form>
+
+        <form novalidate="" style="margin-bottom: 15px; padding: 10px; border: 2px solid #f44336; border-radius: 5px;">
+            <div class="form-group">
+                <label><strong>2. autocomplete="email webauthn"</strong> → 期待: ❌発動しない</label>
+                <input type="text" name="test2" autocomplete="email webauthn" placeholder="Form2">
+            </div>
+        </form>
+
+        <form novalidate="" style="margin-bottom: 15px; padding: 10px; border: 2px solid #f44336; border-radius: 5px;">
+            <div class="form-group">
+                <label><strong>3. autocomplete="webauthn username" (順序逆)</strong> → 期待: ❌発動しない</label>
+                <input type="text" name="test3" autocomplete="webauthn username" placeholder="Form3">
+            </div>
+        </form>
+
+        <form novalidate="" style="margin-bottom: 15px; padding: 10px; border: 2px solid #f44336; border-radius: 5px;">
+            <div class="form-group">
+                <label><strong>4. autocomplete="webauthn email" (順序逆)</strong> → 期待: ❌発動しない</label>
+                <input type="text" name="test4" autocomplete="webauthn email" placeholder="Form4">
+            </div>
+        </form>
+
+        <h3>autocomplete="webauthn" 単独 + 追加条件</h3>
+
+        <form novalidate="" style="margin-bottom: 15px; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px;">
+            <div class="form-group">
+                <label><strong>5. autocomplete="webauthn" + type="password"</strong> → 期待: ✅発動</label>
+                <input type="password" name="test5" autocomplete="webauthn" placeholder="Form5">
+            </div>
+        </form>
+
+        <form novalidate="" style="margin-bottom: 15px; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px;">
+            <div class="form-group">
+                <label><strong>6. autocomplete="webauthn" + name="username"</strong> → 期待: ✅発動</label>
+                <input type="text" name="username" autocomplete="webauthn" placeholder="Form6">
+            </div>
+        </form>
+
+        <form novalidate="" style="margin-bottom: 15px; padding: 10px; border: 2px solid #f44336; border-radius: 5px;">
+            <div class="form-group">
+                <label><strong>7. autocomplete="webauthn" + name="email"</strong> → 期待: ❌発動しない</label>
+                <input type="text" name="email" autocomplete="webauthn" placeholder="Form7">
+            </div>
+        </form>
+
+        <form novalidate="" style="margin-bottom: 15px; padding: 10px; border: 2px solid #f44336; border-radius: 5px;">
+            <div class="form-group">
+                <label><strong>8. autocomplete="webauthn" + name="password" + type="text"</strong> → 期待: ❌発動しない</label>
+                <input type="text" name="password" autocomplete="webauthn" placeholder="Form8">
+            </div>
+        </form>
+
+        <h3>メルカリ同等の実装</h3>
+
+        <form novalidate="" style="margin-bottom: 15px; padding: 10px; border: 2px solid #f44336; border-radius: 5px;">
+            <div class="form-group">
+                <label><strong>9. メルカリ同等: autocomplete="email webauthn" type="email" name="emailOrPhone"</strong> → 期待: ❌発動しない</label>
+                <input type="email" name="emailOrPhone" inputmode="email" autocomplete="email webauthn" placeholder="Form9 (メルカリ同等)">
+            </div>
+        </form>
+
+        <form novalidate="" style="margin-bottom: 15px; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px;">
+            <div class="form-group">
+                <label><strong>10. 修正案: autocomplete="username webauthn" type="email" name="emailOrPhone"</strong> → 期待: ✅発動</label>
+                <input type="email" name="emailOrPhone" inputmode="email" autocomplete="username webauthn" placeholder="Form10 (修正案)">
+            </div>
         </form>
     `;
 
