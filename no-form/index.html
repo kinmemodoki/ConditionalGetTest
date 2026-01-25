@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passkey Autofill Test - No Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Passkey Autofill Test</h1>
+        <p class="test-case">テストケース: <strong>formなし</strong></p>
+
+        <section class="register-section">
+            <h2>パスキーの登録</h2>
+            <button id="registerButton" class="btn">パスキーを登録</button>
+            <div id="registerStatus" class="status"></div>
+        </section>
+
+        <section class="login-section">
+            <h2>ログイン (Conditional UI)</h2>
+            <!-- formタグなし -->
+            <div class="form-group">
+                <label for="username">ユーザー名:</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    autocomplete="username webauthn"
+                    placeholder="ユーザー名を入力"
+                >
+            </div>
+            <button id="loginButton" class="btn">ログイン</button>
+            <div id="loginStatus" class="status"></div>
+        </section>
+
+        <section class="assertion-section" id="assertionSection" style="display: none;">
+            <h2>Assertion Details</h2>
+            <div id="assertionDetails" class="assertion-details"></div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

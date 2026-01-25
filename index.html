@@ -3,43 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebAuthn Conditional UI Test</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Passkey Autofill Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        h2 {
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 15px 0;
+        }
+        a {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            min-width: 200px;
+            text-align: center;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+        .expected {
+            display: inline-block;
+            margin-left: 15px;
+            font-size: 14px;
+        }
+        .expected-chrome {
+            color: #4285f4;
+        }
+        .expected-firefox {
+            color: #ff6611;
+        }
+        .ok {
+            color: #28a745;
+        }
+        .ng {
+            color: #dc3545;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+        .report-link {
+            margin-top: 40px;
+        }
+        .report-link a {
+            background-color: #6c757d;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>WebAuthn Conditional UI (Passkey Autofill) Test</h1>
-        
-        <section class="register-section">
-            <h2>パスキーの登録</h2>
-            <button id="registerButton" class="btn">パスキーを登録</button>
-            <div id="registerStatus" class="status"></div>
-        </section>
+    <h1>Passkey Autofill (Conditional UI) Test</h1>
+    <p class="description">Firefoxにおけるform要素のid属性有無によるPasskey Autofill発動の違いを検証するテストページ</p>
 
-        <section class="login-section">
-            <h2>ログイン (Conditional UI)</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="username">ユーザー名:</label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        name="username" 
-                        autocomplete="username webauthn"
-                        placeholder="ユーザー名を入力"
-                    >
-                </div>
-                <button type="submit" class="btn">ログイン</button>
-            </form>
-            <div id="loginStatus" class="status"></div>
-        </section>
+    <h2>テストケース</h2>
+    <ul>
+        <li>
+            <a href="no-form/">formなし</a>
+            <span class="expected">
+                <span class="expected-chrome">Chrome: <span class="ok">OK</span></span> /
+                <span class="expected-firefox">Firefox: <span class="ng">NG</span></span>
+            </span>
+        </li>
+        <li>
+            <a href="form-no-id/">formあり（id属性なし）</a>
+            <span class="expected">
+                <span class="expected-chrome">Chrome: <span class="ok">OK</span></span> /
+                <span class="expected-firefox">Firefox: <span class="ok">OK</span> (要検証)</span>
+            </span>
+        </li>
+        <li>
+            <a href="form-with-id/">formあり（id属性あり）</a>
+            <span class="expected">
+                <span class="expected-chrome">Chrome: <span class="ok">OK</span></span> /
+                <span class="expected-firefox">Firefox: <span class="ok">OK</span></span>
+            </span>
+        </li>
+    </ul>
 
-        <section class="assertion-section" id="assertionSection" style="display: none;">
-            <h2>Assertion Details</h2>
-            <div id="assertionDetails" class="assertion-details"></div>
-        </section>
+    <h2>期待される結果</h2>
+    <table>
+        <tr>
+            <th>テストケース</th>
+            <th>Chrome</th>
+            <th>Firefox</th>
+        </tr>
+        <tr>
+            <td>formなし</td>
+            <td class="ok">発動する</td>
+            <td class="ng">発動しない</td>
+        </tr>
+        <tr>
+            <td>formあり（id属性なし）</td>
+            <td class="ok">発動する</td>
+            <td class="ok">発動する (要検証)</td>
+        </tr>
+        <tr>
+            <td>formあり（id属性あり）</td>
+            <td class="ok">発動する</td>
+            <td class="ok">発動する</td>
+        </tr>
+    </table>
+
+    <div class="report-link">
+        <a href="report.md">調査レポート</a>
     </div>
-
-    <script src="script.js"></script>
 </body>
 </html>
