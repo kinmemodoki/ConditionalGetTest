@@ -310,15 +310,29 @@ input:focus {
 
             <form novalidate="" class="test-form expect-fail">
                 <div class="form-group">
-                    <label><strong>3. autocomplete="webauthn username" (順序逆)</strong></label>
-                    <input type="text" name="test3" autocomplete="webauthn username" placeholder="Form3">
+                    <label><strong>3. autocomplete="tel webauthn"</strong></label>
+                    <input type="tel" name="test3" autocomplete="tel webauthn" placeholder="Form3">
                 </div>
             </form>
 
             <form novalidate="" class="test-form expect-fail">
                 <div class="form-group">
-                    <label><strong>4. autocomplete="webauthn email" (順序逆)</strong></label>
-                    <input type="text" name="test4" autocomplete="webauthn email" placeholder="Form4">
+                    <label><strong>4. autocomplete="given-name webauthn"</strong></label>
+                    <input type="text" name="test4" autocomplete="given-name webauthn" placeholder="Form4">
+                </div>
+            </form>
+
+            <form novalidate="" class="test-form expect-fail">
+                <div class="form-group">
+                    <label><strong>5. autocomplete="webauthn username" (順序逆)</strong></label>
+                    <input type="text" name="test5" autocomplete="webauthn username" placeholder="Form5">
+                </div>
+            </form>
+
+            <form novalidate="" class="test-form expect-fail">
+                <div class="form-group">
+                    <label><strong>6. autocomplete="webauthn email" (順序逆)</strong></label>
+                    <input type="text" name="test6" autocomplete="webauthn email" placeholder="Form6">
                 </div>
             </form>
 
@@ -326,28 +340,28 @@ input:focus {
 
             <form novalidate="" class="test-form expect-success">
                 <div class="form-group">
-                    <label><strong>5. autocomplete="webauthn" + type="password"</strong></label>
-                    <input type="password" name="test5" autocomplete="webauthn" placeholder="Form5">
+                    <label><strong>7. autocomplete="webauthn" + type="password"</strong></label>
+                    <input type="password" name="test7" autocomplete="webauthn" placeholder="Form7">
                 </div>
             </form>
 
             <form novalidate="" class="test-form expect-success">
                 <div class="form-group">
-                    <label><strong>6. autocomplete="webauthn" + name="username"</strong></label>
+                    <label><strong>8. autocomplete="webauthn" + name="username"</strong></label>
                     <input type="text" name="username" autocomplete="webauthn" placeholder="Form6">
                 </div>
             </form>
 
             <form novalidate="" class="test-form expect-fail">
                 <div class="form-group">
-                    <label><strong>7. autocomplete="webauthn" + name="email"</strong></label>
+                    <label><strong>9. autocomplete="webauthn" + name="email"</strong></label>
                     <input type="text" name="email" autocomplete="webauthn" placeholder="Form7">
                 </div>
             </form>
 
             <form novalidate="" class="test-form expect-fail">
                 <div class="form-group">
-                    <label><strong>8. autocomplete="webauthn" + name="password" + type="text"</strong></label>
+                    <label><strong>10. autocomplete="webauthn" + name="password" + type="text"</strong></label>
                     <input type="text" name="password" autocomplete="webauthn" placeholder="Form8">
                 </div>
             </form>
