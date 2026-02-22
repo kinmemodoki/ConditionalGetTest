@@ -299,6 +299,7 @@ input:focus {
                     <label><strong>1. autocomplete="username webauthn"</strong></label>
                     <input type="text" name="test1" autocomplete="username webauthn" placeholder="Form1">
                 </div>
+                <input type="submit" hidden>
             </form>
 
             <form novalidate="" class="test-form expect-fail">
@@ -306,6 +307,7 @@ input:focus {
                     <label><strong>2. autocomplete="email webauthn"</strong></label>
                     <input type="text" name="test2" autocomplete="email webauthn" placeholder="Form2">
                 </div>
+                <input type="submit" hidden>
             </form>
 
             <form novalidate="" class="test-form expect-fail">
@@ -313,6 +315,7 @@ input:focus {
                     <label><strong>3. autocomplete="tel webauthn"</strong></label>
                     <input type="tel" name="test3" autocomplete="tel webauthn" placeholder="Form3">
                 </div>
+                <input type="submit" hidden>
             </form>
 
             <form novalidate="" class="test-form expect-fail">
@@ -320,6 +323,7 @@ input:focus {
                     <label><strong>4. autocomplete="given-name webauthn"</strong></label>
                     <input type="text" name="test4" autocomplete="given-name webauthn" placeholder="Form4">
                 </div>
+                <input type="submit" hidden>
             </form>
 
             <form novalidate="" class="test-form expect-fail">
@@ -327,6 +331,7 @@ input:focus {
                     <label><strong>5. autocomplete="webauthn username" (順序逆)</strong></label>
                     <input type="text" name="test5" autocomplete="webauthn username" placeholder="Form5">
                 </div>
+                <input type="submit" hidden>
             </form>
 
             <form novalidate="" class="test-form expect-fail">
@@ -334,6 +339,7 @@ input:focus {
                     <label><strong>6. autocomplete="webauthn email" (順序逆)</strong></label>
                     <input type="text" name="test6" autocomplete="webauthn email" placeholder="Form6">
                 </div>
+                <input type="submit" hidden>
             </form>
 
             <h3>autocomplete="webauthn" 単独 + 追加条件</h3>
@@ -343,6 +349,7 @@ input:focus {
                     <label><strong>7. autocomplete="webauthn" + type="password"</strong></label>
                     <input type="password" name="test7" autocomplete="webauthn" placeholder="Form7">
                 </div>
+                <input type="submit" hidden>
             </form>
 
             <form novalidate="" class="test-form expect-success">
@@ -350,6 +357,7 @@ input:focus {
                     <label><strong>8. autocomplete="webauthn" + name="username"</strong></label>
                     <input type="text" name="username" autocomplete="webauthn" placeholder="Form6">
                 </div>
+                <input type="submit" hidden>
             </form>
 
             <form novalidate="" class="test-form expect-fail">
@@ -357,6 +365,7 @@ input:focus {
                     <label><strong>9. autocomplete="webauthn" + name="email"</strong></label>
                     <input type="text" name="email" autocomplete="webauthn" placeholder="Form7">
                 </div>
+                <input type="submit" hidden>
             </form>
 
             <form novalidate="" class="test-form expect-fail">
@@ -364,6 +373,7 @@ input:focus {
                     <label><strong>10. autocomplete="webauthn" + name="password" + type="text"</strong></label>
                     <input type="text" name="password" autocomplete="webauthn" placeholder="Form8">
                 </div>
+                <input type="submit" hidden>
             </form>
 
             <div id="loginStatus" class="status"></div>
